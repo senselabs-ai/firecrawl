@@ -1,4 +1,5 @@
 import axios from "axios";
+import HttpsProxyAgent from 'https-proxy-agent';
 import cheerio, { load } from "cheerio";
 import { URL } from "url";
 import { getLinksFromSitemap } from "./sitemap";
@@ -49,6 +50,47 @@ export class WebCrawler {
     this.maxCrawledLinks = maxCrawledLinks ?? limit;
     this.maxCrawledDepth = maxCrawledDepth ?? 10;
     this.generateImgAltText = generateImgAltText ?? false;
+  }
+
+  private async fetchWithProxy(url: string) {
+    console.log("Entered fetchWithProxy");
+
+    //Throw away proxies
+     let proxies = [
+      'http://jiptprbj:ae29s3xyukcy@38.154.227.167:5868',
+      'http://jiptprbj:ae29s3xyukcy@185.199.229.156:7492',
+      'http://jiptprbj:ae29s3xyukcy@185.199.228.220:7300',
+      'http://jiptprbj:ae29s3xyukcy@185.199.231.45:8382',
+      'http://jiptprbj:ae29s3xyukcy@188.74.210.207:6286',
+      'http://jiptprbj:ae29s3xyukcy@188.74.183.10:8279',
+      'http://jiptprbj:ae29s3xyukcy@188.74.210.21:6100',
+      'http://jiptprbj:ae29s3xyukcy@154.95.36.199:6893',
+      'http://jiptprbj:ae29s3xyukcy@45.94.47.66:8110',
+      'http://jiptprbj:ae29s3xyukcy@45.155.68.129:8133',
+    ];
+
+    const randomIndex = Math.floor(Math.random() * proxies.length);
+    let currentProxyIndex = proxies[randomIndex];
+
+    // Rotate proxy
+    const proxyUrl = proxies[currentProxyIndex];
+
+    // Set up proxy agent
+    const agent = HttpsProxyAgent(proxyUrl);
+
+    try {
+      console.log("Attempting request with proxy");
+      // Perform the request with the proxy
+      const response = await axios.get(url, {
+        httpAgent: agent,
+        httpsAgent: agent
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+
   }
 
   private filterLinks(sitemapLinks: string[], limit: number, maxDepth: number): string[] {
@@ -114,7 +156,10 @@ export class WebCrawler {
   ): Promise<{ url: string, html: string }[]> {
     // Fetch and parse robots.txt
     try {
-      const response = await axios.get(this.robotsTxtUrl);
+      console.log("ENTERED CRAWLER.TS START")
+      // const response = await axios.get(this.robotsTxtUrl);
+      const response = await this.fetchWithProxy(this.robotsTxtUrl);
+      console.log("Ending fetchWithProxy")
       this.robots = robotsParser(this.robotsTxtUrl, response.data);
     } catch (error) {
       console.log(`Failed to fetch robots.txt from ${this.robotsTxtUrl}`);
