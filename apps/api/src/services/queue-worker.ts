@@ -4,6 +4,7 @@ import "dotenv/config";
 import { logtail } from "./logtail";
 import { startWebScraperPipeline } from "../main/runWebScraper";
 import { callWebhook } from "./webhook";
+import { callPublisher } from "./pubsub";
 import { logJob } from "./logging/log_job";
 import { initSDK } from '@hyperdx/node-opentelemetry';
 
@@ -38,7 +39,13 @@ getWebScraperQueue().process(
         error: message /* etc... */,
       };
 
-      await callWebhook(job.data.team_id, data);
+      const finalizedData = {
+        "jobId": job.id,
+        "data": job.returnvalue
+      }
+
+      await callPublisher(JSON.stringify(finalizedData, null, 2));
+      JSON.stringify(finalizedData, null, 2)
 
       await logJob({
         success: success,

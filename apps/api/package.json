@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.20.5",
+    "@aws-sdk/client-sns": "^3.556.0",
     "@brillout/import": "^0.2.2",
     "@bull-board/api": "^5.14.2",
     "@bull-board/express": "^5.8.0",

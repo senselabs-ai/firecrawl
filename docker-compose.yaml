@@ -15,6 +15,10 @@ services:
   api:
     build: apps/api
     environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_SNS_TOPIC=${AWS_SNS_TOPIC}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - PLAYWRIGHT_MICROSERVICE_URL=${PLAYWRIGHT_MICROSERVICE_URL:-http://playwright-service:3000}
       - USE_DB_AUTHENTICATION=${USE_DB_AUTHENTICATION}
@@ -46,6 +50,10 @@ services:
   worker:
     build: apps/api
     environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_SNS_TOPIC=${AWS_SNS_TOPIC}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - PLAYWRIGHT_MICROSERVICE_URL=${PLAYWRIGHT_MICROSERVICE_URL:-http://playwright-service:3000}
       - USE_DB_AUTHENTICATION=${USE_DB_AUTHENTICATION}
